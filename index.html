@@ -28,4 +28,36 @@ async function go(i){if(!pdf||i<0||i>=n||i===current)return;current=i;await Prom
 try{pdf=await pdfjsLib.getDocument({url:'brochure.pdf',disableAutoFetch:false}).promise;n=pdf.numPages;await Promise.all([render(0),render(1)]);layout();status.style.display='none'}catch(err){status.textContent='Unable to open brochure.pdf. Check that the PDF is named exactly brochure.pdf and is in the same GitHub folder as index.html.';console.error(err)}
 $('prev').onclick=()=>go(current-1);$('next').onclick=()=>go(current+1);document.addEventListener('keydown',e=>{if($('modal').classList.contains('open')){if(e.key==='Escape')$('modal').classList.remove('open');return}if(e.key==='ArrowRight')go(current+1);if(e.key==='ArrowLeft')go(current-1)});let x=null;stage.addEventListener('touchstart',e=>{x=e.changedTouches[0].screenX},{passive:true});stage.addEventListener('touchend',e=>{if(x===null)return;const d=e.changedTouches[0].screenX-x;if(Math.abs(d)>45)go(current+(d<0?1:-1));x=null},{passive:true});
 $('share').onclick=()=>{const url=location.href.split('#')[0];$('siteurl').textContent=url;$('qr').src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+encodeURIComponent(url);$('modal').classList.add('open')};$('close').onclick=()=>$('modal').classList.remove('open');$('modal').onclick=e=>{if(e.target===$('modal'))$('modal').classList.remove('open')};$('copy').onclick=async()=>{try{await navigator.clipboard.writeText(location.href.split('#')[0]);$('copy').textContent='Copied!'}catch{window.prompt('Copy your website link:',location.href)}};
+
+const qrImage = document.getElementById('qr');
+
+if (qrImage) {
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText =
+    'position:relative;width:220px;height:220px;margin:auto;';
+
+  qrImage.parentNode.insertBefore(wrapper, qrImage);
+  wrapper.appendChild(qrImage);
+
+  qrImage.style.cssText = 'width:100%;height:100%;';
+
+  const logo = document.createElement('img');
+  logo.src = 'olympiad-logo.png';
+
+  logo.style.cssText = `
+    position:absolute;
+    width:18%;
+    height:18%;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:white;
+    border-radius:50%;
+    padding:3px;
+    object-fit:contain;
+    box-sizing:border-box;
+  `;
+
+  wrapper.appendChild(logo);
+}
 </script></body></html>
